@@ -8,14 +8,33 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var showMiniPlayer: Bool = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView{
+            Tab.init("Home", systemImage: "house"){
+                Text("Home")
+            }
+            Tab.init("Search", systemImage: "magnifyingglass"){
+                Text("Search")
+            }
+            Tab.init("Notifications", systemImage: "bell"){
+                Text("Notifications")
+            }
+            Tab.init("Settings", systemImage: "gearshape"){
+                Text("Settings")
+            }
         }
-        .padding()
+        .overlay{
+            Group {
+                if showMiniPlayer {
+                    ExpandableMusicPlayer(show: $showMiniPlayer)
+                }
+            }
+        }
+        .onAppear{
+            showMiniPlayer = true
+        }
     }
 }
 
