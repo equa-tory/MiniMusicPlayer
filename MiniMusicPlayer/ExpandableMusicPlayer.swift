@@ -118,6 +118,13 @@ struct ExpandableMusicPlayer: View {
                 expandPlayer = true
             }
         }
+//        .swipeActions {
+//            Button(role: .destructive) {
+////                removeSong(song: song)
+//            } label: {
+//                Label("Delete", systemImage: "trash")
+//            }
+//        }
     }
     
     /// Expanded Player
