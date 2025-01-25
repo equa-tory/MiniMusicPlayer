@@ -24,7 +24,7 @@ struct ExpandableMusicPlayer: View {
                 /// Background
                 ZStack {
                     Rectangle()
-                        .fill(Color.white)
+                        .fill(colorScheme == .dark ? .black : .white)
                     
                     Rectangle()
                         .fill(.linearGradient(colors: [.artwork1,.artwork2,], startPoint: .top, endPoint: .bottom))
@@ -34,8 +34,8 @@ struct ExpandableMusicPlayer: View {
                 .frame(height: expandPlayer ? nil : 55)
                 
                 /// Shadows
-                .shadow(color: .primary.opacity(0.06), radius: 5, x: 5, y: 5)
-                .shadow(color: .primary.opacity(0.05), radius: -5, x: -5, y: -5)
+                .shadow(color: colorScheme == .dark ? .white.opacity(0.06) : .black.opacity(0.06), radius: 5, x: 5, y: 5)
+                .shadow(color: colorScheme == .dark ? .white.opacity(0.05) : .black.opacity(0.05), radius: -5, x: -5, y: -5)
                 
                 MiniPlayer()
                     .opacity(expandPlayer ? 0 : 1)
@@ -43,7 +43,7 @@ struct ExpandableMusicPlayer: View {
                 ExpandedPlayer(size, safeArea)
                     .opacity(expandPlayer ? 1 : 0)
             }
-            .frame(height: expandPlayer ? nil : 55, alignment: .top)
+            .frame(height: expandPlayer ? nil : 0, alignment: .top)
             .frame(maxHeight: .infinity, alignment: .bottom)
             .padding(.bottom, expandPlayer ? 0 : safeArea.bottom + 55)
             .padding(.horizontal, expandPlayer ? 0 : 15)
@@ -59,11 +59,12 @@ struct ExpandableMusicPlayer: View {
                     let velocity = value.velocity.height / 5
                     
                     withAnimation(.smooth(duration: 0.3, extraBounce: 0)) {
-                        /// Closing View
-                        expandPlayer = false
+                        if (translation + velocity) > (size.height * 0.5) {
+                            /// Closing View
+                            expandPlayer = false
+                        }
+                        offsetY = 0
                     }
-                    
-                    offsetY = 0
                 }
             )
             .ignoresSafeArea()
@@ -74,6 +75,14 @@ struct ExpandableMusicPlayer: View {
     @ViewBuilder
     func MiniPlayer() -> some View {
         HStack(spacing:12){
+            
+            Button("", systemImage: "xmark"){
+                show = false
+            }
+            .aspectRatio(contentMode: .fill)
+            .frame(width: 25, height: 25)
+            .foregroundStyle(colorScheme == .dark ? .white : .black)
+    
             ZStack {
                 if !expandPlayer {
                     Image(.album)
@@ -86,7 +95,7 @@ struct ExpandableMusicPlayer: View {
             .frame(width: 45, height: 45)
             
             Text("Persona 3")
-                .foregroundStyle(colorScheme == .dark ? Color.black : Color.primary)
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
             
             Spacer(minLength: 0)
             
@@ -99,10 +108,11 @@ struct ExpandableMusicPlayer: View {
                 }
             }
             .font(.title3)
-            .foregroundStyle(colorScheme == .dark ? Color.black : Color.primary)
+            .foregroundStyle(colorScheme == .dark ? .white : .black)
         }
         .padding(.horizontal, 10)
         .frame(height: 55)
+        .contentShape(.rect)
         .onTapGesture {
             withAnimation(.smooth(duration: 0.3, extraBounce: 0)) {
                 expandPlayer = true
