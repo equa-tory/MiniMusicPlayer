@@ -50,23 +50,67 @@ struct ExpandableMusicPlayer: View {
             .offset(y: offsetY)
             .gesture(
                 PanGesture { value in
-                    guard expandPlayer else { return }
-                    let translation = max(value.translation.height, 0)
-                    offsetY = translation
+                    let translation = value.translation.height
+
+                    // Handling for both expand and collapse gestures
+                    if expandPlayer {
+                        offsetY = max(translation, 0)  // Only allow dragging down when expanded
+                    } else {
+                        offsetY = min(translation, 0)  // Only allow dragging up when minimized
+                    }
                 } onEnd: { value in
-                    guard expandPlayer else { return }
-                    let translation = max(value.translation.height, 0)
+                    let translation = value.translation.height
                     let velocity = value.velocity.height / 5
-                    
+
                     withAnimation(.smooth(duration: 0.3, extraBounce: 0)) {
-                        if (translation + velocity) > (size.height * 0.5) {
-                            /// Closing View
-                            expandPlayer = false
+                        if expandPlayer {
+                            // Collapse if dragged enough
+                            if (translation + velocity) > 100 {  // Threshold to collapse
+                                expandPlayer = false
+                            }
+                        } else {
+                            // Expand if dragged enough
+                            if (translation + velocity) < -100 {  // Threshold to expand
+                                expandPlayer = true
+                            }
                         }
-                        offsetY = 0
+                        offsetY = 0  // Reset the offset after the gesture ends
                     }
                 }
             )
+//            .gesture(
+//                DragGesture()  // Changed from PanGesture to DragGesture (more common in SwiftUI)
+//                    .onChanged { value in
+//                        let translation = value.translation.height
+//                        
+//                        // Handling for both expand and collapse gestures
+//                        if expandPlayer {
+//                            offsetY = max(translation, 0)  // Only allow dragging down when expanded
+//                        } else {
+//                            offsetY = min(translation, 0)  // Only allow dragging up when minimized
+//                        }
+//                    }
+//                    .onEnded { value in
+//                        let translation = value.translation.height
+//                        let velocity = value.velocity.height / 5
+//                        
+//                        withAnimation(.smooth(duration: 0.3, extraBounce: 0)) {
+//                            if expandPlayer {
+//                                // Collapse if dragged enough
+//                                if (translation + velocity) > 100 {  // Threshold to collapse
+//                                    expandPlayer = false
+//                                }
+//                            } else {
+//                                // Expand if dragged enough
+//                                if (translation + velocity) < -100 {  // Threshold to expand
+//                                    expandPlayer = true
+//                                }
+//                            }
+//                            offsetY = 0  // Reset the offset after the gesture ends
+//                        }
+//                    }
+//            )
+
             .ignoresSafeArea()
         }
     }
